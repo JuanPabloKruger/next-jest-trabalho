@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals"
 
-import { authenticate } from "@/services/auth/auth.service"
+import { authenticate } from "@/services/auth/auth.service";
 
 describe("AuthService", () => {
 
@@ -26,5 +26,5 @@ describe("AuthService", () => {
     ).rejects.toThrow()
 
   })
-
+  
 })
