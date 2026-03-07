@@ -26,5 +26,5 @@ describe("AuthService", () => {
     ).rejects.toThrow()
 
   })
-  
+
 })
