@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 
 import {
-  authenticateUser,
+  authenticate,
   hasValidationErrors,
   validateLoginPayload,
 } from "@/services/auth/auth.service";
-import { createSessionToken, getSessionCookieOptions } from "@/services/auth/session.service";
+import {
+  createSessionToken,
+  getSessionCookieOptions,
+} from "@/services/auth/session.service";
 import type { LoginPayload } from "@/services/auth/auth.types";
 import { toErrorResponse } from "@/utils/http-response";
 
 export async function POST(request: Request) {
   try {
     const payload = (await request.json()) as Partial<LoginPayload>;
+
     const validationErrors = validateLoginPayload(payload);
 
     if (hasValidationErrors(validationErrors)) {
@@ -24,13 +28,14 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await authenticateUser({
+    const { user } = await authenticate({
       email: payload.email!.trim(),
       password: payload.password!.trim(),
     });
 
     const token = createSessionToken(user);
     const { name, cookieOptions } = getSessionCookieOptions();
+
     const response = NextResponse.json(
       {
         message: "Login realizado com sucesso.",

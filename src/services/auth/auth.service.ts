@@ -48,7 +48,7 @@ export function sanitizeUserId(value: string): string {
     .replace(/_{2,}/g, "_");
 }
 
-export async function authenticateUser(payload: LoginPayload): Promise<AuthUser> {
+export async function authenticate(payload: LoginPayload) {
   const email = payload.email.trim().toLowerCase();
   const password = payload.password.trim();
 
@@ -61,8 +61,10 @@ export async function authenticateUser(payload: LoginPayload): Promise<AuthUser>
   }
 
   return {
-    id: sanitizeUserId(DEMO_USER.id || DEMO_USER.email),
-    name: DEMO_USER.name,
-    email: DEMO_USER.email,
+    user: {
+      id: sanitizeUserId(DEMO_USER.id || DEMO_USER.email),
+      name: DEMO_USER.name,
+      email: DEMO_USER.email,
+    },
   };
 }
