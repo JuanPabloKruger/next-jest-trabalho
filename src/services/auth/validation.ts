@@ -4,7 +4,7 @@ export function validateLoginInput(data: {
 }) {
 
   if (!data.email) {
-    //throw new Error("Email é obrigatório")
+    throw new Error("Email é obrigatório")
   }
 
   if (!data.password) {
