@@ -27,4 +27,39 @@ describe("AuthService", () => {
 
   })
 
+  it("deve falhar quando email é inválido", async () => {
+
+    await expect(
+      authenticate({
+        email: "",
+        password: "123456"
+      })
+    ).rejects.toThrow()
+
+  })
+
+  it("deve falhar quando senha é vazia", async () => {
+
+    await expect(
+      authenticate({
+        email: "aluno@authtask.dev",
+        password: ""
+      })
+    ).rejects.toThrow()
+
+  })
+
+  it("deve retornar estrutura de usuário correta", async () => {
+
+    const result = await authenticate({
+      email: "aluno@authtask.dev",
+      password: "123456"
+    })
+
+    expect(result.user).toHaveProperty("id")
+    expect(result.user).toHaveProperty("name")
+    expect(result.user).toHaveProperty("email")
+
+  })
+
 })

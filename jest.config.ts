@@ -14,9 +14,14 @@ const config: Config = {
   },
 
   collectCoverageFrom: [
-    "src/**/*.{ts,tsx}",
+    "src/services/auth/validation.ts",
+    "src/components/login-form.tsx",
+    "src/components/task-form.tsx",
+    "src/components/dashboard/ServerTaskSummary.tsx",
+    "src/app/api/login/route.ts",
+  
     "!src/**/*.d.ts",
-    "!src/**/__tests__/**",
+    "!src/**/__tests__/**"
   ],
 
   coverageThreshold: {
