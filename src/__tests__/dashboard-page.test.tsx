@@ -3,7 +3,7 @@ import { ServerTaskSummary } from "@/components/dashboard/ServerTaskSummary";
 import { taskService } from "@/services/tasks/task.service";
 import "@testing-library/jest-dom";
 
-// 1. Mock do serviço de tarefas
+// Mock do serviço de tarefas
 jest.mock("@/services/tasks/task.service", () => ({
   taskService: {
     getSummary: jest.fn(),
@@ -29,8 +29,10 @@ describe("ServerTaskSummary", () => {
 
     expect(taskService.getSummary).toHaveBeenCalledWith(userId);
 
-    // ERRO PROPOSITAL
-    expect(screen.getByText("999")).toBeInTheDocument();
+    // Valores corretos esperados
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(screen.getByText("3")).toBeInTheDocument();
   });
 
   it("renderiza mensagem de erro quando o serviço falha", async () => {
