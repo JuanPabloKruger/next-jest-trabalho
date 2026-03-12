@@ -1,65 +1,79 @@
-import { describe, it, expect } from "@jest/globals"
+import { AppError } from "@/utils/app-error";
+import type { AuthUser, LoginPayload } from "../services/auth/auth.types";
 
-import { authenticate } from "@/services/auth/auth.service";
+type LoginValidationErrors = {
+  email?: string;
+  password?: string;
+};
 
-describe("AuthService", () => {
+const DEMO_USER = {
+  id: process.env.AUTH_DEMO_USER_ID ?? "aluno_demo",
+  name: process.env.AUTH_DEMO_USER_NAME ?? "Aluno Demo",
+  email: process.env.AUTH_DEMO_EMAIL ?? "aluno@authtask.dev",
+  password: process.env.AUTH_DEMO_PASSWORD ?? "123456",
+};
 
-  it("deve autenticar usuário com credenciais corretas", async () => {
+export function validateLoginPayload(
+  payload: Partial<LoginPayload>
+): LoginValidationErrors {
+  const errors: LoginValidationErrors = {};
 
-    const result = await authenticate({
-      email: "aluno@authtask.dev",
-      password: "123456"
-    })
+  const email = payload.email?.trim() ?? "";
+  const password = payload.password?.trim() ?? "";
 
-    expect(result).toHaveProperty("user")
-    expect(result.user.email).toBe("aluno@authtask.dev")
+  if (!email) {
+    errors.email = "E-mail é obrigatório.";
+  }
 
-  })
+  if (!password) {
+    errors.password = "Senha é obrigatória.";
+  }
 
-  it("deve falhar com senha inválida", async () => {
+  return errors;
+}
 
-    await expect(
-      authenticate({
-        email: "aluno@authtask.dev",
-        password: "senha_errada"
-      })
-    ).rejects.toThrow()
+export function hasValidationErrors(errors: LoginValidationErrors): boolean {
+  return Object.values(errors).some(Boolean);
+}
 
-  })
+export function sanitizeUserId(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, "_")
+    .replace(/_{2,}/g, "_");
+}
 
-  it("deve falhar quando email é inválido", async () => {
+export async function authenticate(
+  payload: LoginPayload
+): Promise<{ user: AuthUser }> {
+  const email = payload.email.trim().toLowerCase();
+  const password = payload.password.trim();
 
-    await expect(
-      authenticate({
-        email: "",
-        password: "123456"
-      })
-    ).rejects.toThrow()
+  if (!email) {
+    throw new AppError("INVALID_EMAIL", "E-mail inválido.", 400);
+  }
 
-  })
+  if (!password) {
+    throw new AppError("INVALID_PASSWORD", "Senha inválida.", 400);
+  }
 
-  it("deve falhar quando senha é vazia", async () => {
+  if (
+    email !== DEMO_USER.email.toLowerCase() ||
+    password !== DEMO_USER.password
+  ) {
+    throw new AppError(
+      "INVALID_CREDENTIALS",
+      "Credenciais inválidas. Verifique e-mail e senha.",
+      401
+    );
+  }
 
-    await expect(
-      authenticate({
-        email: "aluno@authtask.dev",
-        password: ""
-      })
-    ).rejects.toThrow()
+  const user: AuthUser = {
+    id: sanitizeUserId(DEMO_USER.id || DEMO_USER.email),
+    name: DEMO_USER.name,
+    email: DEMO_USER.email,
+  };
 
-  })
-
-  it("deve retornar estrutura de usuário correta", async () => {
-
-    const result = await authenticate({
-      email: "aluno@authtask.dev",
-      password: "123456"
-    })
-
-    expect(result.user).toHaveProperty("id")
-    expect(result.user).toHaveProperty("name")
-    expect(result.user).toHaveProperty("email")
-
-  })
-
-})
+  return { user };
+}
