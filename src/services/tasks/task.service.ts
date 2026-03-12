@@ -52,16 +52,21 @@ function assertIdentifier(value: string, field: string): string {
 
 export function buildTaskService({ repository }: TaskServiceDeps) {
   return {
+
     async listTasks(userId: string): Promise<Task[]> {
       const safeUserId = assertIdentifier(userId, "Usuário");
       return repository.listByUser(safeUserId);
     },
 
     async createTask(input: CreateTaskInput): Promise<Task> {
-      const safeUserId = assertIdentifier(input.userId, "Usuário");
-      const title = validateTaskTitle(input.title);
 
-      return repository.createForUser(safeUserId, title);
+      // ERRO PROPOSITAL
+      throw new AppError(
+        "BROKEN_SERVICE",
+        "Erro proposital para TDD RED",
+        500
+      );
+
     },
 
     async toggleTaskCompletion(input: ToggleTaskInput): Promise<Task> {
