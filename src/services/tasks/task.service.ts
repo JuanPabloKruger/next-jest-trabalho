@@ -59,14 +59,10 @@ export function buildTaskService({ repository }: TaskServiceDeps) {
     },
 
     async createTask(input: CreateTaskInput): Promise<Task> {
+      const safeUserId = assertIdentifier(input.userId, "Usuário");
+      const title = validateTaskTitle(input.title);
 
-      // ERRO PROPOSITAL
-      throw new AppError(
-        "BROKEN_SERVICE",
-        "Erro proposital para TDD RED",
-        500
-      );
-
+      return repository.createForUser(safeUserId, title);
     },
 
     async toggleTaskCompletion(input: ToggleTaskInput): Promise<Task> {
